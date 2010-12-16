@@ -37,6 +37,9 @@ class Nagios::Status::Model
       hostinfo["servicestatus"].each do |name, status| 
         next if service_pattern and !service_pattern.match(name)
 
+        # Skip myself, if we are a check running from nagios.
+        next if name == ENV["NAGIOS_SERVICEDESC"]
+
         # Skip silenced or checks in scheduled downtime.
         next if status["notifications_enabled"].to_i == 0
         next if status["scheduled_downtime_depth"].to_i > 0
