@@ -139,7 +139,7 @@ def main(args)
 
   # More data output
   ["WARNING", "CRITICAL", "UNKNOWN"].each do |state|
-    if results[state] && results[state].count > 0
+    if results[state] && results[state].size > 0
       puts "Services in #{state}:"
       results[state].sort { |a,b| a["host_name"] <=> b["host_name"] }.each do |service|
         puts "  #{service["host_name"]} => #{service["service_description"]}"
