@@ -34,6 +34,8 @@ class Nagios::Status::Model
   def services(service_pattern=nil, host_pattern=nil)
     matches = []
     self.hosts(host_pattern).each do |host, hostinfo|
+      # Skip hosts if there is no hostinfo (no services associated, etc).
+      next if hostinfo["servicestatus"].nil?
       hostinfo["servicestatus"].each do |name, status| 
         next if service_pattern and !service_pattern.match(name)
 
