@@ -80,6 +80,7 @@ Settings = Struct.new(:nagios_cfg, :status_path, :service_pattern, :host_pattern
 def main(args)
   progname = File.basename($0)
   settings = Settings.new
+  thresholds = Hash.new { |h,k| h[k] = 0 }
   settings.nagios_cfg = "/etc/nagios3/nagios.cfg" # debian/ubuntu default
 
   opts = OptionParser.new do |opts|
@@ -98,6 +99,18 @@ def main(args)
     opts.on("-h REGEX", "--host REGEX",
             "Aggregate only services from hosts matching the given pattern") do |val|
       settings.host_pattern = val
+    end
+
+    thresholds["WARNING"] = 1
+    opts.on("-w NUMBER", "--warning NUMBER",
+            "Exit with a warning state if more than x checks are in warning state (defaults to 1)") do |val|
+      thresholds["WARNING"] = val.to_i
+    end
+
+    thresholds["CRITICAL"] = 1
+    opts.on("-c NUMBER", "--critical NUMBER",
+            "Exit with a critical state if more than x checks are in critical state (defaults to 1)") do |val|
+      thresholds["CRITICAL"] = val.to_i
     end
   end # OptionParser.new
 
@@ -136,6 +149,9 @@ def main(args)
   # Output a summary line
   ["OK", "WARNING", "CRITICAL", "UNKNOWN"].each do | state|
     print "#{state}=#{results[state].length} "
+    if ["WARNING", "CRITICAL"].include?(state)
+      print"(threshold: #{thresholds[state]}) "
+    end
   end
   print "services=/#{settings.service_pattern}/ "
   print "hosts=/#{settings.host_pattern}/ "
@@ -153,11 +169,11 @@ def main(args)
 
   exitcode = 0
 
-  if results["WARNING"].length > 0
+  if results["WARNING"].length >= thresholds["WARNING"]
     exitcode = 1
   end
 
-  if results["CRITICAL"].length > 0
+  if results["CRITICAL"].length >= thresholds["CRITICAL"]
     exitcode = 2
   end
   return exitcode
