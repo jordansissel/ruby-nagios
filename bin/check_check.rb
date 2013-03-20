@@ -103,19 +103,19 @@ def main(args)
 
     thresholds["WARNING"] = 1
     opts.on("-w NUMBER", "--warning NUMBER",
-            "Exit with a warning state if more than x checks are in warning state (defaults to 1)") do |val|
+            "Exit with a warning state if more than x checks are in warning state (defaults to 1, 0 disables the check)") do |val|
       thresholds["WARNING"] = val.to_i
     end
 
     thresholds["CRITICAL"] = 1
     opts.on("-c NUMBER", "--critical NUMBER",
-            "Exit with a critical state if more than x checks are in critical state (defaults to 1)") do |val|
+            "Exit with a critical state if more than x checks are in critical state (defaults to 1, 0 disables the check)") do |val|
       thresholds["CRITICAL"] = val.to_i
     end
 
     thresholds["UNKNOWN"] = 1
     opts.on("-u NUMBER", "--unknown NUMBER",
-            "Exit with a unknown state if more than x checks are in unknown state (defaults to 1)") do |val|
+            "Exit with a unknown state if more than x checks are in unknown state (defaults to 1, 0 disables the check)") do |val|
       thresholds["UNKNOWN"] = val.to_i
     end
   end # OptionParser.new
@@ -165,7 +165,7 @@ def main(args)
 
   # More data output
   ["WARNING", "CRITICAL", "UNKNOWN"].each do |state|
-    if results[state] && results[state].size > 0
+    if results[state] && results[state].size > 0 and thresholds[state] > 0
       puts "Services in #{state}:"
       results[state].sort { |a,b| a["host_name"] <=> b["host_name"] }.each do |service|
         puts "  #{service["host_name"]} => #{service["service_description"]}"
@@ -175,15 +175,15 @@ def main(args)
 
   exitcode = 0
 
-  if results["UNKNOWN"].length >= thresholds["UNKNOWN"]
+  if results["UNKNOWN"].length >= thresholds["UNKNOWN"] and thresholds["UNKNOWN"] > 0
     exitcode = 3
   end
 
-  if results["WARNING"].length >= thresholds["WARNING"]
+  if results["WARNING"].length >= thresholds["WARNING"] and thresholds["WARNING"] > 0
     exitcode = 1
   end
 
-  if results["CRITICAL"].length >= thresholds["CRITICAL"]
+  if results["CRITICAL"].length >= thresholds["CRITICAL"] and thresholds["CRITICAL"] > 0
     exitcode = 2
   end
   return exitcode
