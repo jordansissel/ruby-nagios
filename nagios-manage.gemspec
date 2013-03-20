@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.name = "nagios-manage"
-  spec.version = "0.5.5"
+  spec.version = "0.6.0"
   spec.summary = "nagios-manage - a ruby tool for managing your nagios instance"
   spec.description = "Silence alerts, aggregate existing checks, etc."
   spec.files = files
