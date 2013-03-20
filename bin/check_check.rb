@@ -155,7 +155,7 @@ def main(args)
   # Output a summary line
   ["OK", "WARNING", "CRITICAL", "UNKNOWN"].each do | state|
     print "#{state}=#{results[state].length} "
-    if ["WARNING", "CRITICAL"].include?(state)
+    if ["WARNING", "CRITICAL", "UNKNOWN"].include?(state)
       print"(threshold: #{thresholds[state]}) "
     end
   end
