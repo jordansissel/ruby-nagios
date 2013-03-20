@@ -175,16 +175,16 @@ def main(args)
 
   exitcode = 0
 
+  if results["UNKNOWN"].length >= thresholds["UNKNOWN"]
+    exitcode = 3
+  end
+
   if results["WARNING"].length >= thresholds["WARNING"]
     exitcode = 1
   end
 
   if results["CRITICAL"].length >= thresholds["CRITICAL"]
     exitcode = 2
-  end
-
-  if results["UNKNOWN"].length >= thresholds["UNKNOWN"]
-    exitcode = 3
   end
   return exitcode
 end
