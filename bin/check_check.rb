@@ -112,6 +112,12 @@ def main(args)
             "Exit with a critical state if more than x checks are in critical state (defaults to 1)") do |val|
       thresholds["CRITICAL"] = val.to_i
     end
+
+    thresholds["UNKNOWN"] = 1
+    opts.on("-u NUMBER", "--unknown NUMBER",
+            "Exit with a unknown state if more than x checks are in unknown state (defaults to 1)") do |val|
+      thresholds["UNKNOWN"] = val.to_i
+    end
   end # OptionParser.new
 
   opts.parse!(args)
@@ -175,6 +181,10 @@ def main(args)
 
   if results["CRITICAL"].length >= thresholds["CRITICAL"]
     exitcode = 2
+  end
+
+  if results["UNKNOWN"].length >= thresholds["UNKNOWN"]
+    exitcode = 3
   end
   return exitcode
 end
